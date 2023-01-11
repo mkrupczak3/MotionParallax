@@ -25,7 +25,7 @@ This repo describes an theoretical technique to determine the distance to a land
 
 If a detected cone and the angle to it is known, and the displacement and rotation between camera frames is known, side "b" (distance to cone) can be calculated using the [law of sines](https://www.math.net/law-of-sines):
 
-<img width="565" alt="law of sines" src="./assets/law_of_sines">
+<img width="565" alt="law of sines" src="./assets/law_of_sines.jpg">
 
 
 
@@ -39,7 +39,7 @@ If a detected cone and the angle to it is known, and the displacement and rotati
 
 4. Use an [assignment algorithm](https://en.wikipedia.org/wiki/Hungarian_algorithm) to correlate cones in the current frame to those in the previous frame. Do not attempt to make a correlation for cones whose change in bearing exceeds a specified threshold `T1`
 
-5. For every cone in the current frame, where possible search backwards in time for a given cone until the change in the **reverse bearing** (from the cone to the kart) is sufficiently-large to perform triangulation. Using the threshold `T2` and change in bearing `C`, abs(C) ≥ `T2`. For cones for which no sufficient data is present, treat it as a newly-discovered cone and do not attempt to calculate its distance.
+5. For every cone in the current frame, where possible search backwards in time for a given cone until the change in the **reverse bearing** (from the cone to the kart) is sufficiently-large to perform triangulation. Using the threshold `T2` and change in bearing `C`, abs(`C`) ≥ `T2`. For cones for which no sufficient data is present, treat it as a newly-discovered cone and do not attempt to calculate its distance.
 
 6. Use the law of sines to triangulate the location of a given cone in the current frame. To calculate this distance `b` (in meters) using the camera's displacement `c` (in meters), the change in bearing from the cart to the cone `B`, and the change in bearing from the cone to the kart `C`:
 
