@@ -22,6 +22,7 @@ class Frame {
 
     Frame(double camera_bearing, double[] detection_bearings, Frame prev) {
         frame_number = _next_frame_number;
+        _next_frame_number++;
         this.camera_bearing = camera_bearing;
         this.detection_bearings = detection_bearings;
         this.prev = prev;
