@@ -5,7 +5,7 @@ class Utils {
         super();
     }
 
-    public static double normalize(double inAngle) {
+    public static double normalized(double inAngle) {
         double outAngle = inAngle;
         while (outAngle >= 2.0d * Math.PI) {
             outAngle -= 2.0d * Math.PI;
@@ -17,6 +17,10 @@ class Utils {
     }
 
     public static double getReverseBearing(double inAngle) {
-        return(normalize(inAngle + Math.PI));
+        return(normalized(inAngle + Math.PI));
+    }
+
+    public static double getAngleDiff(double A, double B) {
+        return Math.abs(normalized(A - B));
     }
 }

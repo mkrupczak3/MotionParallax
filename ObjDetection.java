@@ -1,5 +1,7 @@
 package MotionParallax;
 
+import MotionParallax.Frame;
+
 class ObjDetection {
 
     public ObjDetection next;

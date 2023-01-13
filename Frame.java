@@ -3,6 +3,9 @@ package MotionParallax;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import MotionParallax.Utils;
+import MotionParallax.ObjDetection;
+
 class Frame {
 
     protected static long _next_frame_number = 0;
@@ -12,13 +15,13 @@ class Frame {
     protected double z;
 
     protected double [] detection_bearings;
-    protected Hashmap<Double, ObjDetection> detection_objects = new HashMap<>();
+    protected HashMap<Double, ObjDetection> detection_objects = new HashMap<>();
     public Frame next;
     public Frame prev;
     public long frame_number;
 
-    public final THRESHOLD1 = Math.PI / 4.0d;
-    public final THRESHOLD2 = Math.PI / 8.0d;
+    public final double THRESHOLD1 = Math.PI / 8.0d;
+    public final double THRESHOLD2 = Math.PI / 16.0d;
 
     Frame(double camera_bearing, double x, double z, double[] detection_bearings, Frame prev) {
         frame_number = _next_frame_number;
@@ -58,24 +61,26 @@ class Frame {
         return detection_bearings;
     }
 
-    public Hashmap<Double, ObjDetection> getDetectionObjects() {
+    public HashMap<Double, ObjDetection> getDetectionObjects() {
         return detection_objects;
     }
 
-    public correlateToPrev() {
-        ArrayList<double> usableBearings = new ArrayList<double>(detection_bearings);
+    public void correlateToPrev() {
+        ArrayList<Double> usableBearings = new ArrayList<Double>(detection_bearings.length);
+        for (double d : detection_bearings) usableBearings.add(d);
+
         double[] prevBearings = prev.getDetectionBearings();
         double max_diff = 0.0d;
+        double max_diff_bearing = 99999.0d; //value never used
         double diff;
         while (usableBearings.size() > prevBearings.length) {
             max_diff = 0.0d;
-            double max_diff_bearing;
             for (double aBearing : usableBearings) {
                 for (double aPrevBearing : prevBearings) {
                     diff = Utils.getAngleDiff(aBearing, aPrevBearing);
                     if (diff >= max_diff) {
                         max_diff = diff;
-                        max_diff_bearing = aBearing
+                        max_diff_bearing = aBearing;
                     }
                 }
             }
@@ -96,7 +101,7 @@ class Frame {
                 usableBearings.remove(max_diff_bearing);
             }
         }
-        int numRows = prevBearings.length();
+        int numRows = prevBearings.length;
         int numCols = usableBearings.size();
         int[][] costMatrix = new int[numRows][numCols];
 
@@ -105,14 +110,14 @@ class Frame {
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
                 assignment = prevBearings[i];
-                assignee = usableBearings[j];
+                assignee = usableBearings.get(j);
                 costMatrix[i][j] = (int) (Utils.getAngleDiff(assignee, assignment) / (2 * Math.PI)) * (Integer.MAX_VALUE / 2);
             }
         }
         HungarianAlgorithm ha = new HungarianAlgorithm(costMatrix);
         int[][] assignments = ha.findOptimalAssignment();
         for (int[] anAssignment : assignments) {
-            assignee = usableBearings[anAssigment[0]];
+            assignee = usableBearings.get(anAssignment[0]);
             assignment = prevBearings[anAssignment[1]];
             ObjDetection curDetection = detection_objects.get(assignee);
             ObjDetection prevDetection = this.prev.getDetectionObjects().get(assignment);
