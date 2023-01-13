@@ -31,6 +31,9 @@ If a detected cone and the angle to it is known, and the displacement and rotati
 
 ### Steps
 
+<img width="565" alt="sketch B" src="./assets/sketchB.jpeg">
+
+
 1. Find the bearing to cones in the current picture frame
 
 2. Let the kart travel some distance, keeping track of its displacement and rotation
