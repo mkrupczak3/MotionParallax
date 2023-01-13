@@ -20,10 +20,12 @@ class Frame {
     public final THRESHOLD1 = Math.PI / 4.0d;
     public final THRESHOLD2 = Math.PI / 8.0d;
 
-    Frame(double camera_bearing, double[] detection_bearings, Frame prev) {
+    Frame(double camera_bearing, double x, double z, double[] detection_bearings, Frame prev) {
         frame_number = _next_frame_number;
         _next_frame_number++;
         this.camera_bearing = camera_bearing;
+        this.x = x;
+        this.z = z;
         this.detection_bearings = detection_bearings;
         this.prev = prev;
         genDetectionObjects();
