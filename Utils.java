@@ -21,6 +21,10 @@ class Utils {
     }
 
     public static double getAngleDiff(double A, double B) {
+        double diff = Math.abs(normalized(A - B));
+        if (diff > Math.PI) { // if angle is a reflex angle, get its smaller equivalent
+            diff = 2.0d * Math.PI - diff;
+        }
         return Math.abs(normalized(A - B));
     }
 }

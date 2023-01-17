@@ -23,13 +23,17 @@ class Frame {
     public final double THRESHOLD1 = Math.PI / 8.0d;
     public final double THRESHOLD2 = Math.PI / 16.0d;
 
-    Frame(double camera_bearing, double x, double z, double[] detection_bearings, Frame prev) {
+    Frame(double camera_bearing, double x, double z, double[] relative_bearings, Frame prev) {
         frame_number = _next_frame_number;
         _next_frame_number++;
         this.camera_bearing = camera_bearing;
         this.x = x;
         this.z = z;
-        this.detection_bearings = detection_bearings;
+        double[] absolute_bearings = new double[relative_bearings.length];
+        for (int i = 0; i < absolute_bearings.length; i++) {
+            absolute_bearings[i] = Utils.normalized(camera_bearing + d));
+        }
+        this.detection_bearings = absolute_bearings;
         this.prev = prev;
         genDetectionObjects();
     }
@@ -38,11 +42,6 @@ class Frame {
         for (int i = 0; i < detection_bearings.length; i++) {
             detection_objects.put(detection_bearings[i], new ObjDetection(this, detection_bearings[i], null));
         }
-        // out_detection_objects = new ObjDetection[detection_bearings.length];
-        // for (int i = 0; i < detection_bearings.length; i++) {
-        //     out_detection_objects[i] = new ObjDetection(this, detection_bearings[i], null);
-        // }
-        // detection_objects = out_detection_objects;
     }
 
     public double x() {
