@@ -31,7 +31,7 @@ class Frame {
         this.z = z;
         double[] absolute_bearings = new double[relative_bearings.length];
         for (int i = 0; i < absolute_bearings.length; i++) {
-            absolute_bearings[i] = Utils.normalized(camera_bearing + d));
+            absolute_bearings[i] = Utils.normalized(camera_bearing + d);
         }
         this.detection_bearings = absolute_bearings;
         this.prev = prev;
@@ -64,6 +64,9 @@ class Frame {
         return detection_objects;
     }
 
+    // Correlate landmarks in cur frame to those in previous frame
+    //     Where a correlation can be made with certainty, add detection object as head to a linked list
+    //     containing each detection of a specific landmark over time
     public void correlateToPrev() {
         ArrayList<Double> usableBearings = new ArrayList<Double>(detection_bearings.length);
         for (double d : detection_bearings) usableBearings.add(d);
@@ -72,7 +75,7 @@ class Frame {
         double max_diff = 0.0d;
         double max_diff_bearing = 99999.0d; //value never used
         double diff;
-        while (usableBearings.size() > prevBearings.length) {
+        while (usableBearings.size() > prevBearings.length) { // cull current landmark detections
             max_diff = 0.0d;
             for (double aBearing : usableBearings) {
                 for (double aPrevBearing : prevBearings) {
@@ -85,7 +88,7 @@ class Frame {
             }
             usableBearings.remove(max_diff_bearing);
         }
-        while (max_diff >= THRESHOLD1) {
+        while (max_diff >= THRESHOLD1) { // cull landmark detections too far from any prev detections
             max_diff = 0.0d;
             for (double aBearing : usableBearings) {
                 for (double aPrevBearing : prevBearings) {
@@ -110,7 +113,7 @@ class Frame {
             for (int j = 0; j < numCols; j++) {
                 assignment = prevBearings[i];
                 assignee = usableBearings.get(j);
-                costMatrix[i][j] = (int) (Utils.getAngleDiff(assignee, assignment) / (2 * Math.PI)) * (Integer.MAX_VALUE / 2);
+                costMatrix[i][j] = (int) (Utils.getAngleDiff(assignee, assignment) / (2 * Math.PI)) * (Integer.MAX_VALUE / 2); // convert angle diff to an integer score
             }
         }
         HungarianAlgorithm ha = new HungarianAlgorithm(costMatrix);
@@ -123,6 +126,10 @@ class Frame {
             curDetection.prev = prevDetection;
             prevDetection.next = curDetection;
         }
+    }
+
+    public void do_triangulation(ObjDetection head) {
+        return;
     }
 
 }

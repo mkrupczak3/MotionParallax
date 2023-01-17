@@ -25,6 +25,6 @@ class Utils {
         if (diff > Math.PI) { // if angle is a reflex angle, get its smaller equivalent
             diff = 2.0d * Math.PI - diff;
         }
-        return Math.abs(normalized(A - B));
+        return diff;
     }
 }
