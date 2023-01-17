@@ -2,13 +2,13 @@ package MotionParallax;
 
 import MotionParallax.Frame;
 
+
 class ObjDetection {
 
     public ObjDetection next;
     public ObjDetection prev;
 
-    Double cartesianX;
-    Double cartesianZ;
+    public Point centroid;
 
     Frame parent;
 
@@ -18,5 +18,18 @@ class ObjDetection {
         this.parent = parent;
         this.reverse_bearing = Utils.getReverseBearing(bearing);
         this.prev = prev;
+    }
+
+    public double get_reverse_bearing() {
+        return reverse_bearing;
+    }
+
+    public double get_detected_bearing() {
+        // reverse again to obtain original bearing
+        return Utils.getReverseBearing(reverse_bearing);
+    }
+
+    public Frame getParent() {
+        return parent;
     }
 }

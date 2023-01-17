@@ -2,9 +2,13 @@ package MotionParallax;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import MotionParallax.Utils;
 import MotionParallax.ObjDetection;
+import MotionParallax.Point;
 
 class Frame {
 
@@ -31,6 +35,7 @@ class Frame {
         this.z = z;
         double[] absolute_bearings = new double[relative_bearings.length];
         for (int i = 0; i < absolute_bearings.length; i++) {
+            double d = relative_bearings[i];
             absolute_bearings[i] = Utils.normalized(camera_bearing + d);
         }
         this.detection_bearings = absolute_bearings;
@@ -62,6 +67,18 @@ class Frame {
 
     public HashMap<Double, ObjDetection> getDetectionObjects() {
         return detection_objects;
+    }
+
+    public double bearingToFrame(Frame other) {
+        double deltaz = other.z() - z();
+        double deltax = other.x() - x();
+        return Math.atan2(deltaz, deltax);
+    }
+
+    public double distToFrame(Frame other) {
+        double deltaz = other.z() - z();
+        double deltax = other.x() - x();
+        return Math.sqrt(deltaz*deltaz + deltax*deltax);
     }
 
     // Correlate landmarks in cur frame to those in previous frame
@@ -128,8 +145,72 @@ class Frame {
         }
     }
 
+    public void triangulate_all_objs() {
+        ArrayList<ObjDetection> allObjs = new ArrayList<ObjDetection>(getDetectionBearings().length);
+        Set set = getDetectionObjects().entrySet();
+        Iterator i = set.iterator();
+        while (i.hasNext()) {
+            Map.Entry me = (Map.Entry)i.next();
+            allObjs.add((ObjDetection) me.getValue());
+        }
+
+        for (ObjDetection anObj : allObjs) {
+            do_triangulation(anObj);
+        }
+    }
+
     public void do_triangulation(ObjDetection head) {
-        return;
+        if (head.prev == null) {
+            return;
+        }
+        ObjDetection cur = head.prev;
+        ArrayList<ObjDetection> usablePrecursors = new ArrayList<ObjDetection>();
+        do {
+            if (Utils.getAngleDiff(head.get_reverse_bearing(), cur.get_reverse_bearing()) >= THRESHOLD2) {
+                usablePrecursors.add(cur);
+            }
+            cur = cur.prev;
+        } while(cur != null);
+
+        if (usablePrecursors.size() == 0) {
+            return;
+        }
+
+        double c; // meters
+        double B; // radians
+        double C; // radians
+
+        double b; // meters
+
+        ArrayList<Point> triangulations = new ArrayList<Point>(usablePrecursors.size());
+        double x;
+        double z;
+
+        for (ObjDetection anObj : usablePrecursors) {
+            B = Utils.getAngleDiff(anObj.getParent().bearingToFrame(head.getParent()), anObj.get_detected_bearing());
+            C = Utils.getAngleDiff(anObj.get_reverse_bearing(), head.get_reverse_bearing());
+            c = anObj.getParent().distToFrame(head.getParent());
+
+            b = c * Math.sin(B) / Math.sin(C);
+
+            x = b * Math.cos(head.get_detected_bearing());
+            z = b * Math.sin(head.get_detected_bearing());
+            triangulations.add(new Point(x, z));
+        }
+
+        head.centroid = centerOf(triangulations); // write estimated location back to ObjDetection in this frame
+    }
+
+    public Point centerOf(ArrayList<Point> points) {
+        double xavg = 0.0d;
+        double zavg = 0.0d;
+        for (Point aPoint : points) {
+            xavg += aPoint.x();
+            zavg += aPoint.z();
+        }
+        xavg /= points.size();
+        zavg /= points.size();
+        return new Point(xavg, zavg);
     }
 
 }
