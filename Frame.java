@@ -15,8 +15,8 @@ class Frame {
     protected static long _next_frame_number = 0;
 
     protected double camera_bearing;
-    protected double x;
-    protected double z;
+
+    protected Point camera_point;
 
     protected double [] detection_bearings;
     protected HashMap<Double, ObjDetection> detection_objects = new HashMap<>();
@@ -31,8 +31,7 @@ class Frame {
         frame_number = _next_frame_number;
         _next_frame_number++;
         this.camera_bearing = camera_bearing;
-        this.x = x;
-        this.z = z;
+        this.camera_point = new Point(x, z);
         double[] absolute_bearings = new double[relative_bearings.length];
         for (int i = 0; i < absolute_bearings.length; i++) {
             double d = relative_bearings[i];
@@ -50,11 +49,11 @@ class Frame {
     }
 
     public double x() {
-        return x;
+        return camera_point.x();
     }
 
     public double z() {
-        return z;
+        return camera_point.z();
     }
 
     public double getCameraBearing() {
