@@ -8,7 +8,7 @@ class ObjDetection {
     public ObjDetection next;
     public ObjDetection prev;
 
-    public Point centroid;
+    public Point centroid = null;
 
     Frame parent;
 
