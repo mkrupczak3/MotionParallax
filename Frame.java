@@ -16,7 +16,7 @@ class Frame {
 
     protected double camera_bearing;
 
-    protected Point camera_point;
+    public Point camera_point;
 
     protected double [] detection_bearings;
     protected HashMap<Double, ObjDetection> detection_objects = new HashMap<>();
@@ -26,11 +26,22 @@ class Frame {
 
     public final double THRESHOLD1 = Math.PI / 8.0d;
     public final double THRESHOLD2 = Math.PI / 16.0d;
-    public final int MAXOBJLISTLENGTH = 80;
+    public final int MAXLISTLENGTH = 80;
 
     Frame(double camera_bearing, double x, double z, double[] relative_bearings, Frame prev) {
         frame_number = _next_frame_number;
         _next_frame_number++;
+
+        if (frame_number > MAXLISTLENGTH) {
+            Frame cur = this;
+            while (cur.prev.prev != null) {
+                cur = cur.prev;
+            }
+            cur.prev.clearChildren();
+            cur.prev.camera_point = null;
+            cur.prev = null;
+        }
+
         this.camera_bearing = camera_bearing;
         this.camera_point = new Point(x, z);
         double[] absolute_bearings = new double[relative_bearings.length];
@@ -83,16 +94,16 @@ class Frame {
 
     public void clearChildren() {
         for (double aBearing : getDetectionBearings()) {
-            anObj = detection_objects[aBearing];
+            ObjDetection anObj = detection_objects.get(aBearing);
             if (anObj != null) {
                 anObj.prev = null;
                 anObj.next = null;
                 anObj.parent = null;
-                detection_objects[aBearing] = null;
+                detection_objects.put(aBearing, null);
             }
         }
         if (this.prev != null) {
-            this.prev.clearChildren()
+            this.prev.clearChildren();
         }
         this.prev = null;
     }
@@ -190,7 +201,7 @@ class Frame {
         ArrayList<ObjDetection> usablePrecursors = new ArrayList<ObjDetection>();
         int lengthAtCur = 1;
         do {
-            if (lengthAtCur < MAXOBJLISTLENGTH) {
+            if (lengthAtCur < MAXLISTLENGTH) {
                 if (Utils.getAngleDiff(head.get_reverse_bearing(), cur.get_reverse_bearing()) >= THRESHOLD2) {
                     usablePrecursors.add(cur);
                 }
