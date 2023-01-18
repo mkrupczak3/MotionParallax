@@ -32,7 +32,7 @@ class Frame {
         frame_number = _next_frame_number;
         _next_frame_number++;
 
-        if (frame_number > MAXLISTLENGTH) {
+        if (frame_number >= MAXLISTLENGTH) {
             Frame cur = this;
             while (cur.prev.prev != null) {
                 cur = cur.prev;
