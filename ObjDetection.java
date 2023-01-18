@@ -10,7 +10,7 @@ class ObjDetection {
 
     public Point centroid = null;
 
-    Frame parent;
+    public Frame parent;
 
     protected double reverse_bearing; // bearing from landmark to the vehicle
 

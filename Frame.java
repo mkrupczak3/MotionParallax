@@ -26,6 +26,7 @@ class Frame {
 
     public final double THRESHOLD1 = Math.PI / 8.0d;
     public final double THRESHOLD2 = Math.PI / 16.0d;
+    public final int MAXOBJLISTLENGTH = 80;
 
     Frame(double camera_bearing, double x, double z, double[] relative_bearings, Frame prev) {
         frame_number = _next_frame_number;
@@ -164,11 +165,19 @@ class Frame {
         }
         ObjDetection cur = head.prev;
         ArrayList<ObjDetection> usablePrecursors = new ArrayList<ObjDetection>();
+        int lengthAtCur = 1;
         do {
-            if (Utils.getAngleDiff(head.get_reverse_bearing(), cur.get_reverse_bearing()) >= THRESHOLD2) {
-                usablePrecursors.add(cur);
+            if (lengthAtCur < MAXOBJLISTLENGTH) {
+                if (Utils.getAngleDiff(head.get_reverse_bearing(), cur.get_reverse_bearing()) >= THRESHOLD2) {
+                    usablePrecursors.add(cur);
+                }
+            } else {
+                cur.prev.next = null; // de-alloc all LL nodes and frames beyond max allowed length
+                cur.prev = null;
+                cur.parent = null;
             }
             cur = cur.prev;
+            lengthAtCur++;
         } while(cur != null);
 
         if (usablePrecursors.size() == 0) {
