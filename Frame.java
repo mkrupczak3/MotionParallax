@@ -20,7 +20,7 @@ class Frame {
 
     protected double [] detection_bearings;
     protected HashMap<Double, ObjDetection> detection_objects = new HashMap<>();
-    public Frame next;
+
     public Frame prev;
     public long frame_number;
 
@@ -79,6 +79,22 @@ class Frame {
         double deltaz = other.z() - z();
         double deltax = other.x() - x();
         return Math.sqrt(deltaz*deltaz + deltax*deltax);
+    }
+
+    public void clearChildren() {
+        for (double aBearing : getDetectionBearings()) {
+            anObj = detection_objects[aBearing];
+            if (anObj != null) {
+                anObj.prev = null;
+                anObj.next = null;
+                anObj.parent = null;
+                detection_objects[aBearing] = null;
+            }
+        }
+        if (this.prev != null) {
+            this.prev.clearChildren()
+        }
+        this.prev = null;
     }
 
     // Correlate landmarks in cur frame to those in previous frame
@@ -145,7 +161,17 @@ class Frame {
         }
     }
 
+
+
     public void triangulate_all_objs() {
+        ArrayList<ObjDetection> allObjs = get_all_objs();
+
+        for (ObjDetection anObj : allObjs) {
+            do_triangulation(anObj);
+        }
+    }
+
+    public ArrayList<ObjDetection> get_all_objs() {
         ArrayList<ObjDetection> allObjs = new ArrayList<ObjDetection>(getDetectionBearings().length);
         Set set = getDetectionObjects().entrySet();
         Iterator i = set.iterator();
@@ -153,10 +179,7 @@ class Frame {
             Map.Entry me = (Map.Entry)i.next();
             allObjs.add((ObjDetection) me.getValue());
         }
-
-        for (ObjDetection anObj : allObjs) {
-            do_triangulation(anObj);
-        }
+        return allObjs;
     }
 
     public void do_triangulation(ObjDetection head) {
