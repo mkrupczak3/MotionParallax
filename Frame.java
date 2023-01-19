@@ -119,37 +119,62 @@ class Frame {
         for (double d : detection_bearings) usableBearings.add(d);
 
         double[] prevBearings = prev.getDetectionBearings();
-        double max_diff = 0.0d;
-        double max_diff_bearing = 99999.0d; //value never used
+        if (prevBearings == null || prevBearings.length == 0) {
+            return;
+        }
+
+        double max_min_diff = 2 * Math.PI;
+        double max_min_diff_bearing = 9999.0d; // value never used
+        double min_diff = 2 * Math.PI;
+        double min_diff_bearing = 99999.0d; //value never used
         double diff;
         while (usableBearings.size() > prevBearings.length) { // cull current landmark detections
-            max_diff = 0.0d;
+            min_diff = 2 * Math.PI;
             for (double aBearing : usableBearings) {
                 for (double aPrevBearing : prevBearings) {
                     diff = Utils.getAngleDiff(aBearing, aPrevBearing);
-                    if (diff >= max_diff) {
-                        max_diff = diff;
-                        max_diff_bearing = aBearing;
+                    if (diff <= min_diff) {
+                        min_diff = diff;
+                        min_diff_bearing = aBearing;
                     }
                 }
+                if (min_diff >= max_min_diff) {
+                    max_min_diff = min_diff;
+                    max_min_diff_bearing = min_diff_bearing;
+                }
             }
-            usableBearings.remove(max_diff_bearing);
+            usableBearings.remove(max_min_diff_bearing);
         }
-        while (max_diff >= THRESHOLD1) { // cull landmark detections too far from any prev detections
-            max_diff = 0.0d;
+
+        if (usableBearings.size() == 0) {
+            return;
+        }
+
+        while (max_min_diff >= THRESHOLD1) { // cull landmark detections too different from any prev detections
+            min_diff = 2 * Math.PI;
             for (double aBearing : usableBearings) {
                 for (double aPrevBearing : prevBearings) {
                     diff = Utils.getAngleDiff(aBearing, aPrevBearing);
-                    if (diff >= max_diff) {
-                        max_diff = diff;
-                        max_diff_bearing = aBearing;
+                    diff = Utils.getAngleDiff(aBearing, aPrevBearing);
+                    if (diff <= min_diff) {
+                        min_diff = diff;
+                        min_diff_bearing = aBearing;
                     }
                 }
+                if (min_diff >= max_min_diff) {
+                    max_min_diff = min_diff;
+                    max_min_diff_bearing = min_diff_bearing;
+                }
             }
-            if (max_diff >= THRESHOLD1) {
-                usableBearings.remove(max_diff_bearing);
+            if (max_min_diff >= THRESHOLD1) {
+                usableBearings.remove(max_min_diff_bearing);
             }
         }
+
+        if (usableBearings.size() == 0) {
+            return;
+        }
+
         int numRows = prevBearings.length;
         int numCols = usableBearings.size();
         int[][] costMatrix = new int[numRows][numCols];
