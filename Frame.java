@@ -97,6 +97,9 @@ class Frame {
             ObjDetection anObj = detection_objects.get(aBearing);
             if (anObj != null) {
                 anObj.prev = null;
+                if (anObj.next != null) {
+                    anObj.next.prev = null;
+                }
                 anObj.next = null;
                 anObj.parent = null;
                 detection_objects.put(aBearing, null);
@@ -206,7 +209,7 @@ class Frame {
                     usablePrecursors.add(cur);
                 }
             } else {
-                cur.prev.next = null; // de-alloc all LL nodes and frames beyond max allowed length
+                cur.prev.next = null; // de-alloc all LL nodes beyond max allowed length
                 cur.prev = null;
                 cur.parent = null;
             }
