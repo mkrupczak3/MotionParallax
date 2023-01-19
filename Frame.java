@@ -235,8 +235,8 @@ class Frame {
 
             b = c * Math.sin(B) / Math.sin(C);
 
-            x = b * Math.cos(head.get_detected_bearing());
-            z = b * Math.sin(head.get_detected_bearing());
+            x = x() + b * Math.cos(head.get_detected_bearing());
+            z = z() + b * Math.sin(head.get_detected_bearing());
             triangulations.add(new Point(x, z));
         }
 
