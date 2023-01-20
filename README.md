@@ -19,6 +19,8 @@ This repo describes an theoretical technique to determine the distance to a land
 
 ## Premise
 
+<img width="565" alt="proof of concept" src="./assets/proof_of_life.png">
+
 <img width="565" alt="law of cones" src="./assets/law_of_cones.jpeg">
 
 <img width="565" alt="law of cones" src="./assets/law_of_cones_steps.jpeg">
