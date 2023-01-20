@@ -10,7 +10,7 @@ import MotionParallax.Utils;
 import MotionParallax.ObjDetection;
 import MotionParallax.Point;
 
-class Frame {
+public class Frame {
 
     protected static long _next_frame_number = 0;
 
@@ -24,11 +24,12 @@ class Frame {
     public Frame prev;
     public long frame_number;
 
-    public final double THRESHOLD1 = Math.PI / 8.0d;
+    public final double THRESHOLD1 = 2.0d * Math.PI;
+    // public final double THRESHOLD1 = Math.PI / 8.0d;
     public final double THRESHOLD2 = Math.PI / 16.0d;
     public final int MAXLISTLENGTH = 80;
 
-    Frame(double camera_bearing, double x, double z, double[] relative_bearings, Frame prev) {
+    public Frame(double camera_bearing, double x, double z, double[] relative_bearings, Frame prev) {
         frame_number = _next_frame_number;
         _next_frame_number++;
 
@@ -123,7 +124,7 @@ class Frame {
             return;
         }
 
-        double max_min_diff = 2 * Math.PI;
+        double max_min_diff = 0.0d;
         double max_min_diff_bearing = 9999.0d; // value never used
         double min_diff = 2 * Math.PI;
         double min_diff_bearing = 99999.0d; //value never used

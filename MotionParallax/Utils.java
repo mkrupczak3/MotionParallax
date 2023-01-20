@@ -1,6 +1,6 @@
 package MotionParallax;
 
-class Utils {
+public class Utils {
     Utils() {
         super();
     }

@@ -1,6 +1,6 @@
 package MotionParallax;
 
-class Point {
+public class Point {
     protected double x;
     protected double z;
 

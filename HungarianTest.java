@@ -1,5 +1,3 @@
-package MotionParallax;
-
 import MotionParallax.HungarianAlgorithm;
 
 public class HungarianTest {
