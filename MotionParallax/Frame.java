@@ -176,21 +176,26 @@ class Frame {
         }
 
         int numRows = prevBearings.length;
-        int numCols = usableBearings.size();
+        int numCols = numRows;
         int[][] costMatrix = new int[numRows][numCols];
 
         double assignee;
         double assignment;
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                assignment = prevBearings[i];
-                assignee = usableBearings.get(j);
-                costMatrix[i][j] = (int) (Utils.getAngleDiff(assignee, assignment) / (2 * Math.PI)) * (Integer.MAX_VALUE / 2); // convert angle diff to an integer score
+                if (j < usableBearings.size()) {
+                    assignment = prevBearings[i];
+                    assignee = usableBearings.get(j);
+                    costMatrix[i][j] = (int) (Utils.getAngleDiff(assignee, assignment) / (2 * Math.PI)) * (Integer.MAX_VALUE / 2); // convert angle diff to an integer score
+                } else { // to make the cost matrix square, insert placeholder value of max cost
+                    costMatrix[i][j] = Integer.MAX_VALUE / 2;
+                }
             }
         }
         HungarianAlgorithm ha = new HungarianAlgorithm(costMatrix);
         int[][] assignments = ha.findOptimalAssignment();
-        for (int[] anAssignment : assignments) {
+        for (int i = 0; i < usableBearings.size(); i++) { // find assignment for only non-placeholder columns
+            int[] anAssignment = assignments[i];
             assignee = usableBearings.get(anAssignment[0]);
             assignment = prevBearings[anAssignment[1]];
             ObjDetection curDetection = detection_objects.get(assignee);
