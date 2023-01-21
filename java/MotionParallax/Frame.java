@@ -130,8 +130,8 @@ public class Frame {
         double min_diff_bearing = 99999.0d; //value never used
         double diff;
         while (usableBearings.size() > prevBearings.length) { // cull current landmark detections
-            min_diff = 2 * Math.PI;
             for (double aBearing : usableBearings) {
+                min_diff = 2 * Math.PI;
                 for (double aPrevBearing : prevBearings) {
                     diff = Utils.getAngleDiff(aBearing, aPrevBearing);
                     if (diff <= min_diff) {
@@ -152,8 +152,8 @@ public class Frame {
         }
 
         while (max_min_diff >= THRESHOLD1) { // cull landmark detections too different from any prev detections
-            min_diff = 2 * Math.PI;
             for (double aBearing : usableBearings) {
+                min_diff = 2 * Math.PI;
                 for (double aPrevBearing : prevBearings) {
                     diff = Utils.getAngleDiff(aBearing, aPrevBearing);
                     diff = Utils.getAngleDiff(aBearing, aPrevBearing);

@@ -15,9 +15,13 @@ private:
     static uint64_t next_frame_number;
 
 
-    //static constexpr double CORRELATION_ANGLE_THRESHOLD = 2.0 * M_PI;
-    static constexpr double CORRELATION_ANGLE_THRESHOLD = M_PI / 8.0;
-    static constexpr double CONE_REVERSE_ANGLE_THRESHOLD = M_PI / 16.0;
+
+    static constexpr double CORRELATION_ANGLE_THRESHOLD = M_PI / 8.0; // correct thres
+    //static constexpr double CORRELATION_ANGLE_THRESHOLD = 2.0 * M_PI; //debug only
+
+    static constexpr double CONE_REVERSE_ANGLE_THRESHOLD = M_PI / 16.0; // correct thres
+    //static constexpr double CORRELATION_ANGLE_THRESHOLD = 0.0 * M_PI; //debug only
+
     static constexpr uint32_t MAX_LIST_LENGTH = 80;
 
     Point camera_global_pos_;
@@ -47,7 +51,7 @@ public:
     void correlate_to_prev();
 
     void triangulate_all_objs();
- 
+
     void do_triangulation(ObjDetection* head);
 
     Point center_of(std::vector<Point>& points);

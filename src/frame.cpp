@@ -76,13 +76,13 @@ void Frame::correlate_to_prev() {
     std::vector<ObjDetection> usable_detections(detections_);
 
     double max_min_diff = 0.0;
-    std::vector<ObjDetection>::iterator max_min_diff_it; 
+    std::vector<ObjDetection>::iterator max_min_diff_it;
     double min_diff = 2 * M_PI;
-    std::vector<ObjDetection>::iterator min_diff_it; 
+    std::vector<ObjDetection>::iterator min_diff_it;
     double diff;
     while (usable_detections.size() > prev_detections.size()) { // cull current landmark detections
-        min_diff = 2 * M_PI;
         for (auto uit = usable_detections.begin(); uit != usable_detections.end(); uit++) {
+            min_diff = 2 * M_PI;
             double usable_det_bearing = uit->detected_bearing();
             for (auto pit = prev_detections.begin(); pit != prev_detections.end(); pit++) {
                 double prev_det_bearing = pit->detected_bearing();
@@ -106,9 +106,9 @@ void Frame::correlate_to_prev() {
     }
 
     // cull landmark detections too different from any prev detections
-    while (max_min_diff >= CORRELATION_ANGLE_THRESHOLD) { 
-        min_diff = 2 * M_PI;
+    while (max_min_diff >= CORRELATION_ANGLE_THRESHOLD) {
         for (auto uit = usable_detections.begin(); uit != usable_detections.end(); uit++) {
+            min_diff = 2 * M_PI;
             double usable_det_bearing = uit->detected_bearing();
             for (auto pit = prev_detections.begin(); pit != prev_detections.end(); pit++) {
                 double prev_det_bearing = pit->detected_bearing();
@@ -136,7 +136,7 @@ void Frame::correlate_to_prev() {
     int num_rows = usable_detections.size();
     int num_cols = prev_detections.size();
     std::vector<std::vector<double>> cost_matrix;
-    
+
     for (ObjDetection& assignee : usable_detections) {
         auto& row = cost_matrix.emplace_back();
         for (ObjDetection& assignment : prev_detections) {
@@ -144,7 +144,7 @@ void Frame::correlate_to_prev() {
                                                 assignment.detected_bearing()));
         }
     }
-    
+
     std::vector<int> assignments;
 
     HungarianAlgorithm ha;
@@ -217,7 +217,7 @@ void Frame::do_triangulation(ObjDetection* head) {
         y = get_y() + b * sin(head->detected_bearing());
         triangulations.emplace_back(x, y);
     }
-    
+
     // write estimated location back to ObjDetection in this frame
     head->centroid = center_of(triangulations);
 }
