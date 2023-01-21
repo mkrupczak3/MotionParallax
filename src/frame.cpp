@@ -1,6 +1,7 @@
 #include "frame.hpp"
 
 #include "hungarian.hpp"
+#include "stdio.h"
 
 
 namespace motion_parallax {
@@ -73,17 +74,20 @@ void Frame::correlate_to_prev() {
         return;
     }
 
-    std::vector<ObjDetection> usable_detections(detections_);
+    std::vector<ObjDetection*> usable_detections;
+    for (auto& det : detections_) {
+        usable_detections.push_back(&det);
+    }
 
     double max_min_diff = 0.0;
-    std::vector<ObjDetection>::iterator max_min_diff_it;
+    std::vector<ObjDetection*>::iterator max_min_diff_it;
     double min_diff = 2 * M_PI;
-    std::vector<ObjDetection>::iterator min_diff_it;
+    std::vector<ObjDetection*>::iterator min_diff_it;
     double diff;
     while (usable_detections.size() > prev_detections.size()) { // cull current landmark detections
         for (auto uit = usable_detections.begin(); uit != usable_detections.end(); uit++) {
             min_diff = 2 * M_PI;
-            double usable_det_bearing = uit->detected_bearing();
+            double usable_det_bearing = (*uit)->detected_bearing();
             for (auto pit = prev_detections.begin(); pit != prev_detections.end(); pit++) {
                 double prev_det_bearing = pit->detected_bearing();
                 diff = utils::get_angle_diff(usable_det_bearing, prev_det_bearing);
@@ -109,7 +113,7 @@ void Frame::correlate_to_prev() {
     while (max_min_diff >= CORRELATION_ANGLE_THRESHOLD) {
         for (auto uit = usable_detections.begin(); uit != usable_detections.end(); uit++) {
             min_diff = 2 * M_PI;
-            double usable_det_bearing = uit->detected_bearing();
+            double usable_det_bearing = (*uit)->detected_bearing();
             for (auto pit = prev_detections.begin(); pit != prev_detections.end(); pit++) {
                 double prev_det_bearing = pit->detected_bearing();
                 diff = utils::get_angle_diff(usable_det_bearing, prev_det_bearing);
@@ -137,26 +141,44 @@ void Frame::correlate_to_prev() {
     int num_cols = prev_detections.size();
     std::vector<std::vector<double>> cost_matrix;
 
-    for (ObjDetection& assignee : usable_detections) {
+    for (ObjDetection* assignee : usable_detections) {
         auto& row = cost_matrix.emplace_back();
         for (ObjDetection& assignment : prev_detections) {
-            row.push_back(utils::get_angle_diff(assignee.detected_bearing(),
+            row.push_back(utils::get_angle_diff(assignee->detected_bearing(),
                                                 assignment.detected_bearing()));
         }
     }
 
     std::vector<int> assignments;
 
+
+    //printf("[\n");
+    for (auto row : cost_matrix) {
+        //printf("[ ");
+        for (auto el : row) {
+            //printf("%f ", el);
+        }
+        //printf(" ]\n");
+    }
+    //printf("]\n");
+
+
     HungarianAlgorithm ha;
     ha.Solve(cost_matrix, assignments);
 
+    //printf("[ ");
+    for (auto n : assignments) {
+        //printf("%d ", n);
+    }
+    //printf("]\n");
+
     // find assignment for only non-placeholder columns
     for (int i = 0; i < usable_detections.size(); i++) {
-        ObjDetection& assignee = usable_detections[i];
+        ObjDetection* assignee = usable_detections[i];
         ObjDetection& assignment = prev_detections[assignments[i]];
 
-        assignee.prev = &assignment;
-        assignment.next = &assignee;
+        assignee->prev = &assignment;
+        assignment.next = assignee;
     }
 }
 
@@ -169,6 +191,8 @@ void Frame::triangulate_all_objs() {
 }
 
 void Frame::do_triangulation(ObjDetection* head) {
+
+
     if (head == nullptr || head->prev == nullptr) {
         return;
     }
@@ -189,6 +213,8 @@ void Frame::do_triangulation(ObjDetection* head) {
         cur = cur->prev;
         length_at_cur++;
     } while (cur != nullptr);
+
+    //printf("got here\n");
 
     if (usable_precursors.empty()) {
         return;
@@ -219,6 +245,7 @@ void Frame::do_triangulation(ObjDetection* head) {
     }
 
     // write estimated location back to ObjDetection in this frame
+    //printf("got here\n");
     head->centroid = center_of(triangulations);
 }
 

@@ -16,8 +16,8 @@ private:
 
 
 
-    static constexpr double CORRELATION_ANGLE_THRESHOLD = M_PI / 8.0; // correct thres
-    //static constexpr double CORRELATION_ANGLE_THRESHOLD = 2.0 * M_PI; //debug only
+    //static constexpr double CORRELATION_ANGLE_THRESHOLD = M_PI / 8.0; // correct thres
+    static constexpr double CORRELATION_ANGLE_THRESHOLD = 2.0 * M_PI; //debug only
 
     static constexpr double CONE_REVERSE_ANGLE_THRESHOLD = M_PI / 16.0; // correct thres
     //static constexpr double CORRELATION_ANGLE_THRESHOLD = 0.0 * M_PI; //debug only
