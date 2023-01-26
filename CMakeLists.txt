@@ -10,11 +10,10 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-
-
+find_package(voltron_msgs REQUIRED)
 
 add_executable(motion_parallax_node
-  src/main.cpp
+  src/motionparallaxnode.cpp
   src/frame.cpp
   src/point.cpp
   src/utils.cpp
@@ -22,8 +21,7 @@ add_executable(motion_parallax_node
   src/hungarian.cpp
 )
 
-
-ament_target_dependencies(motion_parallax_node rclcpp std_msgs)
+ament_target_dependencies(motion_parallax_node rclcpp std_msgs voltron_msgs)
 
 target_include_directories(motion_parallax_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
