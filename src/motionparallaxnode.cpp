@@ -10,39 +10,43 @@ using std::placeholders::_1;
 
 using namespace motion_parallax;
 
-class MotionParallaxSubscriber : public rclcpp::Node
-{
-public:
-  MotionParallaxSubscriber()
-  : Node("Motion Parallax Node")
-  {
+class MotionParallaxSubscriber : public rclcpp::Node {
+  public: MotionParallaxSubscriber() : Node("MotionParallaxNode") {
     subscription_ = this->create_subscription<voltron_msgs::msg::ConeBearings>(  
       "cone_bearings", 10, std::bind(&MotionParallaxSubscriber::bearing_callback, this, _1));
   }
 
-private:
-  void bearing_callback(const voltron_msgs::msg::ConeBearings & msg) const 
-  {
-    Frame f0(0.0, 0.0, 0.0, { (M_PI / 4.0), ((3 * M_PI) / 4) }, nullptr);
-    Frame f1(0.0, 0.0, 100.0, { M_PI, 0.0 }, &f0);
-
-    f1.correlate_to_prev();
-    printf("correlated\n");
-    f1.triangulate_all_objs();
-    printf("triangulated\n");
-
-    for (auto det : f1.detections()) {
-        printf("=======\n");
-        std::optional<Point> op = det.centroid;
-
-        if (op) {
-            printf("x: %f y: %f\n", op.value().x, op.value().y);
-        } else {
-            printf("this shit don exist\n");
-        }
-        printf("=======\n");
+  private:
+    void bearing_callback(const voltron_msgs::msg::ConeBearings & msg) const {
+      printf("TimeStamp: %d\n", msg.header.stamp.sec);
+      printf("Frame ID: %s\n", msg.header.frame_id.c_str());
+      int counter = 0;
+      for (const auto& bearing : msg.data) {
+          printf("bearing %d: %f\n", counter, bearing);
+          counter++;
+      }
     }
-  }
+  // void bearing_callback(const voltron_msgs::msg::ConeBearings & msg) const 
+  // {
+  //   Frame f0(0.0, 0.0, 0.0, { (M_PI / 4.0), ((3 * M_PI) / 4) }, nullptr);
+  //   Frame f1(0.0, 0.0, 100.0, { M_PI, 0.0 }, &f0);
+  //   f1.correlate_to_prev();
+  //   printf("correlated\n");
+  //   f1.triangulate_all_objs();
+  //   printf("triangulated\n");
+
+  //   for (auto det : f1.detections()) {
+  //       printf("=======\n");
+  //       std::optional<Point> op = det.centroid;
+
+  //       if (op) {
+  //           printf("x: %f y: %f\n", op.value().x, op.value().y);
+  //       } else {
+  //           printf("this shit don exist\n");
+  //       }
+  //       printf("=======\n");
+  //   }
+  // }
   rclcpp::Subscription<voltron_msgs::msg::ConeBearings>::SharedPtr subscription_;
 };
 
