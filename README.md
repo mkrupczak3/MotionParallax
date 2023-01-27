@@ -30,7 +30,7 @@ In addition, this technique employs an accurate algorithm to correlate landmark 
 <img width="565" alt="law of cones" src="./assets/law_of_cones.jpeg">
 
 
-If a detected cone and the angle to it is known, and the displacement and rotation between camera frames is known, side "b" (distance to cone) can be calculated using the [law of sines](https://www.math.net/law-of-sines):
+If a detected landmark and the angle to it is known, and the displacement and rotation between camera frames is known, side "b" (distance to landmark) can be calculated using the [law of sines](https://www.math.net/law-of-sines):
 
 <img width="565" alt="law of sines" src="./assets/law_of_sines.jpg">
 
