@@ -29,7 +29,7 @@ public class Frame {
     public final double THRESHOLD2 = Math.PI / 16.0d;
     public final int MAXLISTLENGTH = 80;
 
-    public Frame(double camera_bearing, double x, double z, double[] relative_bearings, Frame prev) {
+    public Frame(double camera_bearing, double x, double y, double[] relative_bearings, Frame prev) {
         frame_number = _next_frame_number;
         _next_frame_number++;
 
@@ -44,7 +44,7 @@ public class Frame {
         }
 
         this.camera_bearing = camera_bearing;
-        this.camera_point = new Point(x, z);
+        this.camera_point = new Point(x, y);
         double[] absolute_bearings = new double[relative_bearings.length];
         for (int i = 0; i < absolute_bearings.length; i++) {
             double d = relative_bearings[i];
@@ -65,8 +65,8 @@ public class Frame {
         return camera_point.x();
     }
 
-    public double z() {
-        return camera_point.z();
+    public double y() {
+        return camera_point.y();
     }
 
     public double getCameraBearing() {
@@ -82,15 +82,15 @@ public class Frame {
     }
 
     public double bearingToFrame(Frame other) {
-        double deltaz = other.z() - z();
+        double deltay = other.y() - y();
         double deltax = other.x() - x();
-        return Math.atan2(deltaz, deltax);
+        return Math.atan2(deltay, deltax);
     }
 
     public double distToFrame(Frame other) {
-        double deltaz = other.z() - z();
+        double deltay = other.y() - y();
         double deltax = other.x() - x();
-        return Math.sqrt(deltaz*deltaz + deltax*deltax);
+        return Math.sqrt(deltay*deltay + deltax*deltax);
     }
 
     public void clearChildren() {
@@ -260,7 +260,7 @@ public class Frame {
 
         ArrayList<Point> triangulations = new ArrayList<Point>(usablePrecursors.size());
         double x;
-        double z;
+        double y;
 
         for (ObjDetection anObj : usablePrecursors) {
             B = Utils.getAngleDiff(anObj.getParent().bearingToFrame(head.getParent()), anObj.get_detected_bearing());
@@ -270,8 +270,8 @@ public class Frame {
             b = c * Math.sin(B) / Math.sin(C);
 
             x = x() + b * Math.cos(head.get_detected_bearing());
-            z = z() + b * Math.sin(head.get_detected_bearing());
-            triangulations.add(new Point(x, z));
+            y = y() + b * Math.sin(head.get_detected_bearing());
+            triangulations.add(new Point(x, y));
         }
 
         head.centroid = centerOf(triangulations); // write estimated location back to ObjDetection in this frame
@@ -279,14 +279,14 @@ public class Frame {
 
     public Point centerOf(ArrayList<Point> points) {
         double xavg = 0.0d;
-        double zavg = 0.0d;
+        double yavg = 0.0d;
         for (Point aPoint : points) {
             xavg += aPoint.x();
-            zavg += aPoint.z();
+            yavg += aPoint.y();
         }
         xavg /= points.size();
-        zavg /= points.size();
-        return new Point(xavg, zavg);
+        yavg /= points.size();
+        return new Point(xavg, yavg);
     }
 
 }

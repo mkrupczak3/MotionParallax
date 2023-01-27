@@ -2,18 +2,18 @@ package MotionParallax;
 
 public class Point {
     protected double x;
-    protected double z;
+    protected double y;
 
-    Point(double x, double z) {
+    Point(double x, double y) {
         this.x = x;
-        this.z = z;
+        this.y = y;
     }
 
     public double x() {
         return x;
     }
 
-    public double z() {
-        return z;
+    public double y() {
+        return y;
     }
 }
