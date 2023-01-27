@@ -4,6 +4,8 @@ A camera-only technique to correlate and determine distance to landmarks over ti
 
 Originally created for use by the [KSU EVT](ksuevt.org) undergraduate student competition team
 
+cpp code by Sahan Reddy and Ethan Leitner
+
 ## Motivation
 
 After substantial testing with an [OAK-D Pro](https://shop.luxonis.com/products/oak-d-pro) camera, we found that its stereoscopic depth values were wildly inaccurate past distances of about 10ft. This is likely because the distance between the two stereoscopic cameras is so small that it is negligible at longer distances.
