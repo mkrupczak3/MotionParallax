@@ -1,12 +1,14 @@
 package MotionParallax;
 
-public class Point {
+public class ThreeDPoint {
     protected double x;
     protected double y;
+    protected double z;
 
-    Point(double x, double y) {
+    public ThreeDPoint(double x, double y, double z) {
         this.x = x;
         this.y = y;
+        this.z = z;
     }
 
     public double x() {
@@ -15,5 +17,9 @@ public class Point {
 
     public double y() {
         return y;
+    }
+
+    public double z() {
+        return z;
     }
 }

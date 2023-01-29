@@ -16,15 +16,32 @@ public class Utils {
         return outAngle;
     }
 
-    public static double getReverseBearing(double inAngle) {
-        return(normalized(inAngle + Math.PI));
+    public static double getReverseAngle(double inAngle) {
+        return normalized(inAngle + Math.PI);
     }
 
-    public static double getAngleDiff(double A, double B) {
-        double diff = Math.abs(normalized(A - B));
-        if (diff > Math.PI) { // if angle is a reflex angle, get its smaller equivalent
-            diff = 2.0d * Math.PI - diff;
+    public static ThreeDAngle normalized(ThreeDAngle inAngle) {
+        return new ThreeDAngle(normalized(inAngle.xyAngle()), normalized(inAngle.xzAngle()));
+    }
+
+    public static ThreeDAngle getReverseAngle(ThreeDAngle inAngle) {
+        return(new ThreeDAngle(getReverseAngle(inAngle.xyAngle()), getReverseAngle(inAngle.xzAngle())));
+    }
+
+    public static double getAngleDiff(ThreeDAngle A, ThreeDAngle B) {
+        double xyDiff = normalized(B.xyAngle() - A.xyAngle());
+        double xzDiff = normalized(B.xzAngle() - A.xzAngle());
+
+        if (xyDiff > Math.PI) { // if angle is a reflex angle, get its smaller equivalent
+            xyDiff = 2.0d * Math.PI - xyDiff;
         }
-        return diff;
+
+        if (xzDiff > Math.PI) { // if angle is a reflex angle, get its smaller equivalent
+            xzDiff = 2.0d * Math.PI - xzDiff;
+        }
+
+        // pythagorean formula for sphere: cos(arclen a) = cos(arclen b) * cos(arclen c)
+        // find the angle of the shortest direct arc
+        return normalized(Math.acos(Math.cos(xyDiff) * Math.cos(xzDiff)));
     }
 }
