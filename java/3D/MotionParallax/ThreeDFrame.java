@@ -294,9 +294,11 @@ public class ThreeDFrame {
             b = c * Math.sin(B) / Math.sin(C); // calculated dist to target from cur camera_point. Triangle does not have to contain a right angle
             // System.out.printf("b: %f\n", b);
 
-            x = x() + b * Math.cos(head.getDetAngle().xyAngle());
-            y = y() + b * Math.sin(head.getDetAngle().xyAngle());
+            x = x() + b * Math.cos(head.getDetAngle().xyAngle()) * Math.cos(head.getDetAngle().xzAngle());
+            // System.out.printf("xyAngle: %f\n", Math.toDegrees(head.getDetAngle().xyAngle()));
+            y = y() + b * Math.sin(head.getDetAngle().xyAngle()) * Math.sin(head.getDetAngle().xzAngle());
             z = z() + b * Math.sin(head.getDetAngle().xzAngle());
+            // System.out.printf("xzAngle: %f\n", Math.toDegrees(head.getDetAngle().xzAngle()));
             triangulations.add(new ThreeDPoint(x, y, z));
         }
 
