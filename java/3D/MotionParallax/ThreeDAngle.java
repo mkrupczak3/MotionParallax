@@ -36,6 +36,11 @@ public class ThreeDAngle {
     }
 
     @Override
+    public String toString() {
+        return ("xyAngle: " + Math.toDegrees(xyAngle) + " xzAngle: " + Math.toDegrees(xzAngle));
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
