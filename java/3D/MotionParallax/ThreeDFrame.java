@@ -98,9 +98,14 @@ public class ThreeDFrame {
         double deltax = other.x() - x();
         double deltay = other.y() - y();
         double deltaz = other.z() - z();
+        System.out.println("deltax: " + deltax);
+        System.out.println("deltay: " + deltay);
+        System.out.println("deltaz: " + deltaz);
         double xyAngle = Math.atan2(deltay, deltax);
-        double xzAngle = Math.atan2(deltaz, -1.0d * (deltax*deltax + deltay*deltay));
+        double xzAngle = Math.atan2(deltaz, Math.sqrt(deltax*deltax + deltay*deltay));
+        System.out.println("angleToFrame xyAngle: " + Math.toDegrees(xyAngle));
         System.out.println("angleToFrame xzAngle: " + Math.toDegrees(xzAngle));
+
         return new ThreeDAngle(xyAngle, xzAngle);
     }
 
