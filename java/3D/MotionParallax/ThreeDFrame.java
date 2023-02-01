@@ -98,8 +98,11 @@ public class ThreeDFrame {
         double deltax = other.x() - x();
         double deltay = other.y() - y();
         double deltaz = other.z() - z();
+
         double xyAngle = Math.atan2(deltay, deltax);
-        double xzAngle = Math.atan2(deltaz, deltax);
+        // thanks Seth!
+        double xzAngle = Math.atan2(deltaz, Math.sqrt(deltax*deltax + deltay*deltay));
+
         return new ThreeDAngle(xyAngle, xzAngle);
     }
 
@@ -286,19 +289,14 @@ public class ThreeDFrame {
         for (ThreeDObjDetection anObj : usablePrecursors) {
             // triangulation is performed on plane defined by cur camera_point, prev camera_point, and object
             B = Utils.getAngleDiff(anObj.getParent().angleToFrame(head.getParent()), anObj.getDetAngle());
-            // System.out.printf("B: %f\n", Math.toDegrees(B));
             C = Utils.getAngleDiff(anObj.getReverseAngle(), head.getReverseAngle());
-            // System.out.printf("C: %f\n", Math.toDegrees(C));
             c = anObj.getParent().distToFrame(head.getParent());
-            // System.out.printf("c: %f\n", c);
-            b = c * Math.sin(B) / Math.sin(C); // calculated dist to target from cur camera_point. Triangle does not have to contain a right angle
-            // System.out.printf("b: %f\n", b);
+            b = c * Math.sin(B) / Math.sin(C); // calculated d ist to target from cur camera_point. Triangle does not have to contain a right angle
 
             x = x() + b * Math.cos(head.getDetAngle().xyAngle()) * Math.cos(head.getDetAngle().xzAngle());
-            // System.out.printf("xyAngle: %f\n", Math.toDegrees(head.getDetAngle().xyAngle()));
-            y = y() + b * Math.sin(head.getDetAngle().xyAngle()) * Math.sin(head.getDetAngle().xzAngle());
+            y = y() + b * Math.sin(head.getDetAngle().xyAngle()) * Math.cos(head.getDetAngle().xzAngle());
             z = z() + b * Math.sin(head.getDetAngle().xzAngle());
-            // System.out.printf("xzAngle: %f\n", Math.toDegrees(head.getDetAngle().xzAngle()));
+
             triangulations.add(new ThreeDPoint(x, y, z));
         }
 

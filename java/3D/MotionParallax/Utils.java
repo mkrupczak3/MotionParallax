@@ -29,19 +29,22 @@ public class Utils {
     }
 
     public static double getAngleDiff(ThreeDAngle A, ThreeDAngle B) {
-        double xyDiff = normalized(B.xyAngle() - A.xyAngle());
-        double xzDiff = normalized(B.xzAngle() - A.xzAngle());
+        double phi = A.xyAngle();
+        double theta = A.xzAngle();
 
-        if (xyDiff > Math.PI) { // if angle is a reflex angle, get its smaller equivalent
-            xyDiff = 2.0d * Math.PI - xyDiff;
-        }
+        double phi_prime = B.xyAngle();
+        double theta_prime = B.xzAngle();
 
-        if (xzDiff > Math.PI) { // if angle is a reflex angle, get its smaller equivalent
-            xzDiff = 2.0d * Math.PI - xzDiff;
-        }
-
-        // pythagorean formula for sphere: cos(arclen a) = cos(arclen b) * cos(arclen c)
         // find the angle of the shortest direct arc
-        return normalized(Math.acos(Math.cos(xyDiff) * Math.cos(xzDiff)));
+        // https://math.stackexchange.com/a/2940458
+        return normalized(Math.acos(cos(theta)*cos(theta_prime)*cos(phi-phi_prime) + sin(theta)*sin(theta_prime)));
+    }
+
+    public static double sin(double radAngle) {
+        return Math.sin(radAngle);
+    }
+
+    public static double cos(double radAngle) {
+        return Math.cos(radAngle);
     }
 }
